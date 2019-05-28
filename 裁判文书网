@@ -1,0 +1,68 @@
+// ==UserScript==
+// @name         [外网版]［裁判文书网］ 获取文书网信息
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       行攀
+// @match        http://wenshu.court.gov.cn/List/List*
+// @require      http://cdn.bootcss.com/jquery/1.11.2/jquery.js
+// @grant        GM_xmlhttpRequest
+// ==/UserScript==
+
+
+function sleep(numberMillis) {
+	var now = new Date();
+	var exitTime = now.getTime() + numberMillis;
+	while (true) {
+		now = new Date();
+		if (now.getTime() > exitTime)
+		return;
+	    }
+}
+(function() {
+    'use strict';
+
+    var monkey_url = 'http://127.0.0.1:9090/message';
+
+    // 获取公司名称
+    var caseresult = $('#resultList');
+    console.log(caseresult);
+    var company_name = $('#resultList').find('div.dataItem');
+
+    window.addEventListener('load', (event) => {
+        console.log('page is fully loaded');
+        company_name = $('#resultList').find('div.dataItem');
+        console.log('xingpan');
+        console.log(company_name);
+        var dataList = [];
+        for (var i=0; i<company_name.length; i++){
+            var title = $(company_name[i]).attr("title");
+            var casecourt = $(company_name[i]).attr("casecourt");
+            var casenumber = $(company_name[i]).attr("casenumber");
+            var judgedate = $(company_name[i]).attr("judgedate");
+            dataList.push({
+                'title': title,
+                'casecourt': casecourt,
+                'casenumber': casenumber,
+                'judgedate': judgedate
+            })
+
+
+        }
+        console.log(dataList);
+
+        GM_xmlhttpRequest({
+            method: "POST",
+            url: monkey_url,
+            data : JSON.stringify({'name':"爬虫",'address':dataList}),
+            onload: function(response) {
+                //这里写处理函数
+                console.log(response);
+                console.log(dataList);
+                //window.close();
+            }
+        });
+    });
+
+    // Your code here...
+})();
